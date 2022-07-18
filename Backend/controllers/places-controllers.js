@@ -1,5 +1,7 @@
 /** @format */
 
+const uuid = require("uuid");
+
 const HttpError = require("../models/http-error");
 
 const Dummy_places = [
@@ -36,6 +38,22 @@ const getPlaceByUserId = (req, res, next) => {
   }
 };
 
+const createPlace = (req, res, next) => {
+  const { title, description, coordinates, address, creator } = req.body;
+  const newPlace = {
+    id: uuid.v4(),
+    title: title,
+    description,
+    location: coordinates,
+    address: address,
+    creator,
+  };
+  Dummy_places.push(newPlace);
+  res.send(Dummy_places);
+};
+
 exports.getPlaceById = getPlaceById;
 
 exports.getPlaceByUserId = getPlaceByUserId;
+
+exports.createPlace = createPlace;
