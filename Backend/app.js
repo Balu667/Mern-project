@@ -1,6 +1,7 @@
 /** @format */
 
 const express = require("express");
+const mongoose = require("mongoose");
 const port = 5000;
 const placeRoutes = require("./routes/places-routes");
 const userRoutes = require("./routes/user-routes");
@@ -32,6 +33,13 @@ app.use((error, req, res, next) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Your Application running on port ${port}`);
-});
+mongoose
+  .connect(
+    "mongodb+srv://mahendra:Balumahi7780@cluster0.mwhrt.mongodb.net/places?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Your Application running on port ${port}`);
+    });
+  })
+  .catch((err) => console.log(err));
