@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+/** @format */
 
-import MainHeader from './MainHeader';
-import NavLinks from './NavLinks';
-import SideDrawer from './SideDrawer';
-import Backdrop from '../UIElements/Backdrop';
-import './MainNavigation.css';
+import React, { useState } from "react";
+import { NavLink as Link } from "react-router-dom";
 
-const MainNavigation = props => {
+import MainHeader from "./MainHeader";
+import NavLinks from "./NavLinks";
+import SideDrawer from "./SideDrawer";
+import Backdrop from "../UIElements/Backdrop";
+import "./MainNavigation.css";
+
+const MainNavigation = (props) => {
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
 
   const openDrawerHandler = () => {
@@ -22,24 +24,23 @@ const MainNavigation = props => {
     <React.Fragment>
       {drawerIsOpen && <Backdrop onClick={closeDrawerHandler} />}
       <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
-        <nav className="main-navigation__drawer-nav">
+        <nav className='main-navigation__drawer-nav'>
           <NavLinks />
         </nav>
       </SideDrawer>
 
       <MainHeader>
         <button
-          className="main-navigation__menu-btn"
-          onClick={openDrawerHandler}
-        >
+          className='main-navigation__menu-btn'
+          onClick={openDrawerHandler}>
           <span />
           <span />
           <span />
         </button>
-        <h1 className="main-navigation__title">
-          <Link to="/">YourPlaces</Link>
+        <h1 className='main-navigation__title'>
+          <Link to='/'>YourPlaces</Link>
         </h1>
-        <nav className="main-navigation__header-nav">
+        <nav className='main-navigation__header-nav'>
           <NavLinks />
         </nav>
       </MainHeader>

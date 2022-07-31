@@ -1,3 +1,5 @@
+/** @format */
+
 .authentication__header {
   color: white;
   text-align: center;
@@ -12,4 +14,8 @@
 
 .authentication form {
   margin-bottom: 1rem;
+}
+
+.error {
+  color: red;
 }
