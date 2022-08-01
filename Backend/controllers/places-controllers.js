@@ -217,11 +217,6 @@ const createPlace = (req, res, next) => {
 
 exports.getPlaceById = getPlaceById;
 
-<<<<<<< HEAD
-exports.getPlaceByUserId = getPlaceByUserId;
-
-exports.createPlace = createPlace;
-=======
 exports.getPlacesByUserId = getPlacesByUserId;
 
 exports.createPlace = createPlace;
@@ -229,4 +224,3 @@ exports.createPlace = createPlace;
 exports.updatePlace = updatePlace;
 
 exports.deletePlace = deletePlace;
->>>>>>> da62199d15fd2c6f3709ba51e8a15139cbb50840
