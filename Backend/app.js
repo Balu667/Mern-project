@@ -3,12 +3,15 @@
 const express = require("express");
 const port = 5000;
 const placeRoutes = require("./routes/places-routes");
+const bodyParser = require("body-parser");
 
 const app = express();
 
 // console.log(placeRoutes);
 
 app.use("/api/places", placeRoutes);
+
+// app.use(bodyParser.json());
 
 app.use((error, req, res, next) => {
   console.log(req.headerSent);

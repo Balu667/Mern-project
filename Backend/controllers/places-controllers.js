@@ -36,6 +36,22 @@ const getPlaceByUserId = (req, res, next) => {
   }
 };
 
+const createPlace = (req, res, next) => {
+  // const { title, description, coordinates, address, creater } = req.body;
+  // const newPlace = {
+  //   title: title,
+  //   description,
+  //   location: coordinates,
+  //   address,
+  //   creater,
+  // };
+  // Dummy_places.push(newPlace);
+  console.log(req.body);
+  res.send(req.body);
+};
+
 exports.getPlaceById = getPlaceById;
 
 exports.getPlaceByUserId = getPlaceByUserId;
+
+exports.createPlace = createPlace;
