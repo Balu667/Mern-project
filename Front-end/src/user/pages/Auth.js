@@ -9,19 +9,17 @@ import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { MyTextFieldWrapper } from "../../shared/components/MyTextFieldWrapper/MyTextFieldWrapper";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+
+  const { getRequest, isLoading, errorMessage, clearErrorHandler } =
+    useHttpClient();
 
   const switchModeHandler = () => {
     setIsLoginMode((prevMode) => !prevMode);
-  };
-
-  const errorMessageClearHandler = () => {
-    setErrorMessage(null);
   };
 
   const formik = {
@@ -35,68 +33,39 @@ const Auth = () => {
         .required("password is required"),
     }),
     onSubmit: async (values) => {
-      setIsLoading(true);
       if (isLoginMode) {
         try {
-          const response = await fetch(
+          const response = await getRequest(
             "http://localhost:5000/api/users/login",
+            "POST",
+            JSON.stringify(values),
             {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(values),
+              "Content-Type": "application/json",
             }
           );
-          const responseData = await response.json();
-          if (!response.ok) {
-            throw new Error(responseData.message);
-          }
-          auth.login();
-        } catch (err) {
-          setErrorMessage(
-            err.message || "Something went wrong, please try again."
-          );
-        }
-
-        setIsLoading(false);
+          auth.login(response.user.id);
+        } catch (err) {}
       } else {
         try {
-          console.log(values);
-          const response = await fetch(
+          const response = await getRequest(
             "http://localhost:5000/api/users/signup",
+
+            "POST",
+            JSON.stringify(values),
             {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(values),
+              "Content-Type": "application/json",
             }
           );
 
-          const responseData = await response.json();
-          if (!response.ok) {
-            throw new Error(responseData.message);
-          }
-          console.log(responseData);
-
-          setIsLoading(false);
-          auth.login();
-        } catch (err) {
-          setErrorMessage(
-            err.message || "Something went wrong, please try again."
-          );
-        }
+          auth.login(response.id);
+        } catch (err) {}
       }
-      setIsLoading(false);
     },
   };
 
-  console.log(Formik);
-
   return (
     <React.Fragment>
-      <ErrorModal error={errorMessage} onClear={errorMessageClearHandler} />
+      <ErrorModal error={errorMessage} onClear={clearErrorHandler} />
       <Card className='authentication'>
         {isLoading ? (
           <LoadingSpinnner asOverlay />
