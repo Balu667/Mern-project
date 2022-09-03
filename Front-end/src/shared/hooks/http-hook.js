@@ -1,7 +1,5 @@
 /** @format */
-
 import { useCallback, useState } from "react";
-import axios from "axios";
 
 export const useHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,27 +32,6 @@ export const useHttpClient = () => {
     []
   );
 
-  const postRequest = async (url, body) => {
-    setIsLoading(true);
-
-    try {
-      const response = axios.post(url, body);
-
-      console.log(response);
-
-      if (!response.ok) {
-        throw new Error("Something went wrong, Please try again");
-      }
-
-      setIsLoading(false);
-      return response;
-    } catch (err) {
-      setErrorMessage(err.message);
-      setIsLoading(false);
-      throw err;
-    }
-  };
-
   const clearErrorHandler = () => {
     setErrorMessage(null);
   };
@@ -64,6 +41,5 @@ export const useHttpClient = () => {
     clearErrorHandler,
     isLoading,
     errorMessage,
-    postRequest,
   };
 };

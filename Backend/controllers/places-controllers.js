@@ -5,6 +5,7 @@ const getCoordinatesForAddress = require("../util/location");
 const Place = require("../models/places");
 const User = require("../models/users");
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 const HttpError = require("../models/http-error");
 
@@ -59,35 +60,31 @@ const createPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid input fields, Please Check", 422));
   }
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
   let coordinates;
   try {
     coordinates = await getCoordinatesForAddress(address);
   } catch (err) {
     return next(err);
   }
-  console.log(coordinates);
 
   const newPlace = new Place({
     title,
     description,
     location: coordinates,
     address,
-    creator,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/d/d1/Charminar-Pride_of_Hyderabad.jpg",
+    creator: req.userData.userId,
+    image: req.file.path,
   });
 
   let user;
 
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     console.log(err);
     return next(new HttpError("Create Place is failed,Please try again", 500));
   }
-
-  console.log(user);
 
   if (!user) {
     return next(new HttpError("could not find the user by provided id", 404));
@@ -103,7 +100,7 @@ const createPlace = async (req, res, next) => {
   } catch (err) {
     const error = new HttpError(
       "Crating Place is failed, Please try again",
-      err
+      500
     );
     return next(error);
   }
@@ -141,6 +138,10 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (place.creator.toString() !== req.userData.userId) {
+    const error = new HttpError("You could not edit these place", 401);
+    return next(error);
+  }
   place.title = title;
   place.description = description;
 
@@ -182,6 +183,16 @@ const deletePlace = async (req, res, next) => {
     );
   }
 
+  if (place.creator.id !== req.userData.userId) {
+    const error = new HttpError(
+      "You are not allowed to delete these place",
+      401
+    );
+    return next(error);
+  }
+
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -198,21 +209,11 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ message: "Successfully deleted place !" });
-};
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
-const createPlace = (req, res, next) => {
-  // const { title, description, coordinates, address, creater } = req.body;
-  // const newPlace = {
-  //   title: title,
-  //   description,
-  //   location: coordinates,
-  //   address,
-  //   creater,
-  // };
-  // Dummy_places.push(newPlace);
-  console.log(req.body);
-  res.send(req.body);
+  res.status(200).json({ message: "Successfully deleted place !" });
 };
 
 exports.getPlaceById = getPlaceById;

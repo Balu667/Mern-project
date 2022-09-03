@@ -1,0 +1,27 @@
+.preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  height: 150px;
+  width: 150px;
+  margin-bottom: 10px;
+}
+.file-input {
+  display: none;
+}
+
+.preview-container img {
+  height: 100%;
+  width: 100%;
+}
+
+.pick-button {
+  padding: 5px 10px;
+  border: 1px solid rgb(72, 65, 65);
+  font-size: 16px;
+}
+.pick-button:hover {
+  color: #fff;
+  background-color: blue;
+}

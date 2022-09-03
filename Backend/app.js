@@ -1,23 +1,21 @@
-/** @format */
-
 const express = require("express");
 const mongoose = require("mongoose");
 const port = 5000;
 const placeRoutes = require("./routes/places-routes");
-<<<<<<< HEAD
-const bodyParser = require("body-parser");
-=======
 const userRoutes = require("./routes/user-routes");
-
 const bodyParser = require("body-parser");
 const HttpError = require("./models/http-error");
->>>>>>> da62199d15fd2c6f3709ba51e8a15139cbb50840
-
+const fs = require("fs");
+const path = require("path");
 const app = express();
 
-// console.log(placeRoutes);
-
 app.use(bodyParser.json());
+
+//serve the folder code or images outside the server In nodeJs is every request is comes for middlewares only
+
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
+
+app.use("/app.js", express.static(path.join("app.js")));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -37,10 +35,12 @@ app.use((req, res, next) => {
   next(error);
 });
 
-// app.use(bodyParser.json());
-
 app.use((error, req, res, next) => {
-  console.log(req.headerSent);
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      console.log(err);
+    });
+  }
   if (req.headerSent) {
     next(error);
   } else {

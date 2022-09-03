@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
 import { AuthContext } from "../../shared/context/auth-context";
@@ -10,10 +10,13 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { MyTextFieldWrapper } from "../../shared/components/MyTextFieldWrapper/MyTextFieldWrapper";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+// import { ImageUpload } from "../../shared/components/ImageUpload/ImageUpload";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [imgUrl, setImgUrl] = useState(null);
+  const fileRef = useRef();
 
   const { getRequest, isLoading, errorMessage, clearErrorHandler } =
     useHttpClient();
@@ -23,7 +26,7 @@ const Auth = () => {
   };
 
   const formik = {
-    initialValues: { name: "", email: "", password: "" },
+    initialValues: { name: "", email: "", password: "", image: "" },
     validationSchema: Yup.object({
       email: Yup.string()
         .email("Invalid email address")
@@ -43,21 +46,25 @@ const Auth = () => {
               "Content-Type": "application/json",
             }
           );
-          auth.login(response.user.id);
-        } catch (err) {}
+
+          auth.login(response.id, response.token);
+        } catch (err) {
+          console.log(err);
+        }
       } else {
         try {
+          const formData = new FormData();
+          formData.append("email", values.email);
+          formData.append("name", values.name);
+          formData.append("password", values.password);
+          formData.append("image", values.image);
           const response = await getRequest(
             "http://localhost:5000/api/users/signup",
-
             "POST",
-            JSON.stringify(values),
-            {
-              "Content-Type": "application/json",
-            }
+            formData
           );
 
-          auth.login(response.id);
+          auth.login(response.id, response.token);
         } catch (err) {}
       }
     },
@@ -66,7 +73,7 @@ const Auth = () => {
   return (
     <React.Fragment>
       <ErrorModal error={errorMessage} onClear={clearErrorHandler} />
-      <Card className='authentication'>
+      <Card className="authentication">
         {isLoading ? (
           <LoadingSpinnner asOverlay />
         ) : (
@@ -76,32 +83,77 @@ const Auth = () => {
             <Formik
               initialValues={formik.initialValues}
               validationSchema={formik.validationSchema}
-              onSubmit={formik.onSubmit}>
+              onSubmit={formik.onSubmit}
+            >
               {(props) => (
                 <Form>
                   {!isLoginMode && (
                     <MyTextFieldWrapper
-                      label='Name'
-                      type='text'
-                      name='name'
-                      placeholder='Enter the Name'
+                      label="Name"
+                      type="text"
+                      name="name"
+                      placeholder="Enter the Name"
                     />
                   )}
+
                   <MyTextFieldWrapper
-                    label='Email'
-                    type='text'
-                    name='email'
-                    placeholder='Enter the Email'
+                    label="Email"
+                    type="text"
+                    name="email"
+                    placeholder="Enter the Email"
                   />
+                  {!isLoginMode && (
+                    <>
+                      <div className="preview-container">
+                        {imgUrl ? (
+                          <img
+                            src={imgUrl}
+                            alt="preview-img"
+                            className="preview-image"
+                          />
+                        ) : (
+                          "Please Pick a Image"
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept=".png, .jpg, .jpeg"
+                        name="image"
+                        // className="file-input"
+                        onChange={(e) => {
+                          props.setFieldValue("image", e.target.files[0]);
+                          const fileReader = new FileReader();
+
+                          fileReader.onload = () => {
+                            if (fileReader.readyState === 2) {
+                              setImgUrl(fileReader.result);
+                            }
+                          };
+
+                          fileReader.readAsDataURL(e.target.files[0]);
+                        }}
+                      />
+                      {/* <button
+                        type="button"
+                        className="pick-button"
+                        onClick={pickHandler}
+                      >
+                        Pick Image
+                      </button> */}
+                    </>
+                  )}
+
                   <MyTextFieldWrapper
-                    label='Password'
-                    type='text'
-                    name='password'
-                    placeholder='Enter the password'
+                    label="Password"
+                    type="text"
+                    name="password"
+                    placeholder="Enter the password"
                   />
+
                   <Button
-                    type='submit'
-                    disabled={!(props.isValid && props.dirty)}>
+                    type="submit"
+                    disabled={!(props.isValid && props.dirty)}
+                  >
                     {isLoginMode ? "LOGIN" : "SIGNUP"}
                   </Button>
                 </Form>

@@ -6,6 +6,10 @@ const HttpError = require("../models/http-error");
 
 const User = require("../models/users");
 
+const bcrypt = require("bcryptjs");
+
+const jwt = require("jsonwebtoken");
+
 const getUsers = async (req, res, next) => {
   let users;
   try {
@@ -39,18 +43,25 @@ const signUP = async (req, res, next) => {
   if (hasUser) {
     const error = new HttpError(
       "Email is already registered, Please Login",
-      401
+      422
     );
     return next(error);
+  }
+
+  let hashedPassword;
+
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch {
+    return next(new HttpError("Could not create the user", 500));
   }
 
   const newUser = new User({
     name,
     email,
-    password,
+    password: hashedPassword,
     places,
-    image:
-      "https://scontent.fblr12-1.fna.fbcdn.net/v/t1.6435-9/168898908_2970385969917602_5369120451877331572_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=730e14&_nc_ohc=uHdXDZo6JJwAX8G0OaQ&_nc_ht=scontent.fblr12-1.fna&oh=00_AT-9JAPhaDhFNPoAd8rXCrzYT5-yLZNrSwES6jJmgVL-2w&oe=6300F2B6",
+    image: req.file.path,
   });
 
   try {
@@ -60,7 +71,21 @@ const signUP = async (req, res, next) => {
     return next(new HttpError("Signup failed, Please try again", 500));
   }
 
-  res.status(201).json({ user: newUser.toObject({ getters: true }) });
+  let token;
+
+  try {
+    token = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      "secretkey_notshare_anyone",
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    return next(new HttpError("Signup failed, Please try again", 500));
+  }
+
+  res
+    .status(201)
+    .json({ email: newUser.email, password: newUser.password, token: token });
 };
 
 const logIn = async (req, res, next) => {
@@ -87,17 +112,49 @@ const logIn = async (req, res, next) => {
   }
 
   if (!identifyUser) {
-    return next(new HttpError("Email is not registered, Plese register first"));
+    return next(
+      new HttpError("Email is not registered, Plese register first", 403)
+    );
   }
-  if (identifyUser.password === password) {
-    res.json({ user: identifyUser.toObject({ getters: true }) });
-  } else {
+
+  let isValidUser = false;
+
+  try {
+    isValidUser = await bcrypt.compare(password, identifyUser.password);
+  } catch {
+    return next(
+      new HttpError("Could not find the user, please check the creditials", 500)
+    );
+  }
+
+  console.log(isValidUser);
+
+  if (!isValidUser) {
     return next(
       new HttpError(
-        "password and email mismatch, please enter correct creditials"
+        "password and email mismatch, please enter correct creditials",
+        500
       )
     );
   }
+
+  let token;
+  try {
+    token = jwt.sign(
+      { id: identifyUser.id, email: identifyUser.email },
+      "secretkey_notshare_anyone",
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    return next(
+      new HttpError(
+        "password and email mismatch, please enter correct creditials",
+        500
+      )
+    );
+  }
+
+  res.json({ id: identifyUser.id, email: identifyUser.email, token: token });
 };
 
 exports.getUsers = getUsers;

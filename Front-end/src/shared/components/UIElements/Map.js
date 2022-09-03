@@ -11,7 +11,7 @@ const Map = (props) => {
 
   useEffect(() => {
     let map;
-    if (!mapRef.current) {
+    if (mapRef.current && !map) {
       map = new window.google.maps.Map(mapRef.current, {
         center: center,
         zoom: zoom,
@@ -25,7 +25,8 @@ const Map = (props) => {
     <div
       ref={mapRef}
       className={`map ${props.className}`}
-      style={props.style}></div>
+      style={props.style}
+    ></div>
   );
 };
 

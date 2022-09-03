@@ -1,6 +1,5 @@
 /** @format */
-
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Button from "../../shared/components/FormElements/Button";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -10,20 +9,15 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { AuthContext } from "../../shared/context/auth-context";
+import { useHistory } from "react-router-dom";
 
 const NewPlace = () => {
-  // const placeSubmitHandler = (event) => {
-  //   event.preventDefault();
-  // };
+  const history = useHistory();
   const auth = useContext(AuthContext);
-  console.log(auth);
-  const {
-    getRequest,
-    isLoading,
-    errorMessage,
-    clearErrorHandler,
-    postRequest,
-  } = useHttpClient();
+  const [placeImg, setPlaceImage] = useState(null);
+  const [img, setImg] = useState(null);
+  const { getRequest, isLoading, errorMessage, clearErrorHandler } =
+    useHttpClient();
   const data = {
     initialValues: {
       title: "",
@@ -42,22 +36,33 @@ const NewPlace = () => {
         .required("Address is required"),
     }),
     onSubmit: async (values) => {
-      const object = { ...values, creator: auth.userId };
-      console.log(JSON.stringify(object));
+      console.log(values);
       try {
-        const response = await postRequest(
-          "//localhost:5000/api/places",
-          JSON.stringify(object)
-          // {
-          //   "Content-Type": "application/json",
-          // }
+        const formData = new FormData();
+        formData.append("title", values.title);
+        formData.append("description", values.description);
+        formData.append("address", values.address);
+        formData.append("image", img);
+        const response = await getRequest(
+          "http://localhost:5000/api/places",
+          "POST",
+          formData,
+          {
+            Authorization: "Bearer " + auth.token,
+          }
         );
-        console.log(response);
+        history.push("/");
       } catch (err) {
         console.log(err);
       }
     },
   };
+
+  if (img) {
+    data.image = img;
+    // formik.setFieldValue("image", e.target.files[0]);
+    console.log(img);
+  }
 
   return (
     <React.Fragment>
@@ -68,27 +73,62 @@ const NewPlace = () => {
         <Formik
           initialValues={data.initialValues}
           validationSchema={data.validationSchema}
-          onSubmit={data.onSubmit}>
+          onSubmit={data.onSubmit}
+        >
           {(formik) => (
-            <Form className='place-form'>
+            <Form className="place-form">
               <MyTextFieldWrapper
-                name='title'
-                placeholder='Enter the title of place'
-                type='text'
+                name="title"
+                placeholder="Enter the title of place"
+                type="text"
+                label="Title"
               />
               <MyTextFieldWrapper
-                name='description'
-                placeholder='Enter the title of place'
-                type='text'
+                name="description"
+                placeholder="Enter the description of place"
+                label="Description"
+                type="text"
               />
               <MyTextFieldWrapper
-                name='address'
-                placeholder='Enter the title of place'
-                type='text'
+                name="address"
+                label="Address"
+                placeholder="Enter the address of  place"
+                type="text"
               />
+              <label>Image of the Place</label>
+              <div className="preview-container">
+                {placeImg ? (
+                  <img
+                    src={placeImg}
+                    alt="preview-img"
+                    className="preview-image"
+                  />
+                ) : (
+                  "Please Pick a Image"
+                )}
+              </div>
+              <input
+                type="file"
+                accept=".png, .jpg, .jpeg"
+                name="image"
+                // className="file-input"
+                onChange={(e) => {
+                  setImg(e.target.files[0]);
+                  const fileReader = new FileReader();
+                  fileReader.onload = () => {
+                    if (fileReader.readyState === 2) {
+                      setPlaceImage(fileReader.result);
+                    }
+                  };
+
+                  fileReader.readAsDataURL(e.target.files[0]);
+                }}
+              />
+
               <Button
-                type='submit'
-                disabled={!(formik.dirty && formik.isValid)}>
+                type="submit"
+                disabled={!(formik.dirty && formik.isValid && !!img)}
+              >
                 ADD PLACE
               </Button>
             </Form>
