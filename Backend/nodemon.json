@@ -1,0 +1,8 @@
+{
+  "env": {
+    "DB_USER": "mahendra",
+    "DB_PASSWORD": "Balumahi7780",
+    "DB_NAME": "mern",
+    "MAP_API_KEY": "1a9e3a9676404a3ba3617fc8565c0cdf"
+  }
+}

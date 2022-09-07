@@ -5,7 +5,7 @@ const HttpError = require("../models/http-error");
 
 async function getCoordinatesForAddress(address) {
   const response = await axios.get(
-    `https://api.opencagedata.com/geocode/v1/json?q=${address}&key=1a9e3a9676404a3ba3617fc8565c0cdf`
+    `https://api.opencagedata.com/geocode/v1/json?q=${address}&key=${process.env.MAP_API_KEY}`
   );
 
   if (!response) {
