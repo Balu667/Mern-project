@@ -8,3 +8,16 @@
   border-radius: 6px;
   background: white;
 }
+
+.previewplace-container {
+  height: 200px;
+  width: 200px;
+  border: 1px solid grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.previewplace-container img {
+  height: 100%;
+  width: 100%;
+}

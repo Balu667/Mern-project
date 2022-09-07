@@ -44,7 +44,7 @@ const NewPlace = () => {
         formData.append("address", values.address);
         formData.append("image", img);
         const response = await getRequest(
-          "http://localhost:5000/api/places",
+          process.env.REACT_APP_BACKEND_URL + "/places",
           "POST",
           formData,
           {
@@ -96,7 +96,7 @@ const NewPlace = () => {
                 type="text"
               />
               <label>Image of the Place</label>
-              <div className="preview-container">
+              <div className="previewplace-container">
                 {placeImg ? (
                   <img
                     src={placeImg}

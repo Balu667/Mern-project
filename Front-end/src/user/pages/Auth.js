@@ -10,13 +10,11 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { MyTextFieldWrapper } from "../../shared/components/MyTextFieldWrapper/MyTextFieldWrapper";
 import { useHttpClient } from "../../shared/hooks/http-hook";
-// import { ImageUpload } from "../../shared/components/ImageUpload/ImageUpload";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [imgUrl, setImgUrl] = useState(null);
-  const fileRef = useRef();
 
   const { getRequest, isLoading, errorMessage, clearErrorHandler } =
     useHttpClient();
@@ -39,7 +37,7 @@ const Auth = () => {
       if (isLoginMode) {
         try {
           const response = await getRequest(
-            "http://localhost:5000/api/users/login",
+            process.env.REACT_APP_BACKEND_URL + "/users/login",
             "POST",
             JSON.stringify(values),
             {
@@ -59,7 +57,7 @@ const Auth = () => {
           formData.append("password", values.password);
           formData.append("image", values.image);
           const response = await getRequest(
-            "http://localhost:5000/api/users/signup",
+            `${process.env.REACT_APP_BACKEND_URL}/users/signup`,
             "POST",
             formData
           );

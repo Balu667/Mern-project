@@ -76,7 +76,7 @@ const UpdatePlace = () => {
         onSubmit={async (values) => {
           try {
             const response = await getRequest(
-              `http://localhost:5000/api/places/${placeId}`,
+              `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`,
               "PATCH",
               JSON.stringify(values),
               {
