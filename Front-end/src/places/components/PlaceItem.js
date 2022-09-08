@@ -10,6 +10,7 @@ import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const PlaceItem = (props) => {
+  console.log(props.location)
   const auth = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -97,8 +98,12 @@ const PlaceItem = (props) => {
             <p>{props.description}</p>
           </div>
           <div className="place-item__actions">
-            <Button inverse onClick={openMapHandler}>
-              VIEW ON MAP
+            <Button 
+            // inverse
+            //  onClick={openMapHandler}
+             >
+            <a style={{textDecoration:"none", color:"#fff"}} target="_blank" href={"http://maps.google.com/?q=" +  props.address}>VIEW ON MAP</a>
+             
             </Button>
             {auth.isLoggedIn && (
               <Button to={`/places/${props.id}`}>EDIT</Button>

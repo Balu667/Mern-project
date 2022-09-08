@@ -1,7 +1,6 @@
-/** @format */
 
 const { validationResult } = require("express-validator");
-const getCoordinatesForAddress = require("../util/location");
+// const getCoordinatesForAddress = require("../util/location");
 const Place = require("../models/places");
 const User = require("../models/users");
 const mongoose = require("mongoose");
@@ -61,17 +60,17 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Invalid input fields, Please Check", 422));
   }
   const { title, description, address } = req.body;
-  let coordinates;
-  try {
-    coordinates = await getCoordinatesForAddress(address);
-  } catch (err) {
-    return next(err);
-  }
+  // let coordinates;
+  // try {
+  //   coordinates = await getCoordinatesForAddress(address);
+  // } catch (err) {
+  //   return next(err);
+  // }
 
   const newPlace = new Place({
     title,
     description,
-    location: coordinates,
+    location: address,
     address,
     creator: req.userData.userId,
     image: req.file.path,
