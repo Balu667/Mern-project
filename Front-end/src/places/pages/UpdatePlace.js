@@ -23,11 +23,16 @@ const UpdatePlace = () => {
 
   useEffect(() => {
     const getIdentifiedPlace = async () => {
-      console.log("renderes");
       try {
         const response = await getRequest(
-          `http://localhost:5000/api/places/${placeId}`
+          process.env.REACT_APP_BACKEND_URL + "/places/" + placeId,
+          "GET",
+          null,
+          {
+            Authorization: "Bearer " + auth.token,
+          }
         );
+
         setIdentifieldPlace(response.place);
       } catch (err) {}
     };

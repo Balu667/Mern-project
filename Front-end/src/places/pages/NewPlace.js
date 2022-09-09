@@ -36,7 +36,6 @@ const NewPlace = () => {
         .required("Address is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       try {
         const formData = new FormData();
         formData.append("title", values.title);
@@ -58,11 +57,10 @@ const NewPlace = () => {
     },
   };
 
-  if (img) {
-    data.image = img;
-    // formik.setFieldValue("image", e.target.files[0]);
-    console.log(img);
-  }
+  // if (img) {
+  //   data.image = img;
+  //   // formik.setFieldValue("image", e.target.files[0]);
+  // }
 
   return (
     <React.Fragment>

@@ -42,7 +42,7 @@ export const useAuth = () => {
 
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("userData"));
-    console.log(storedData);
+
     if (
       storedData &&
       storedData.token &&

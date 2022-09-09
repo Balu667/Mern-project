@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from "react";
 import "./ImageUpload.css";
 
 export const ImageUpload = (props) => {
-  console.log(props);
   const fileRef = useRef();
   const [file, setFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);

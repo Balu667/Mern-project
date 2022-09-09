@@ -10,7 +10,6 @@ import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 const PlaceItem = (props) => {
-  console.log(props.location)
   const auth = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -30,7 +29,7 @@ const PlaceItem = (props) => {
     setShowConfirmModal(false);
     try {
       await getRequest(
-        `http://localhost:5000/api/places/${props.id}`,
+        process.env.REACT_APP_BACKEND_URL + "/places/" + props.id,
         "DELETE",
         null,
         {
@@ -98,12 +97,17 @@ const PlaceItem = (props) => {
             <p>{props.description}</p>
           </div>
           <div className="place-item__actions">
-            <Button 
+            <Button
             // inverse
             //  onClick={openMapHandler}
-             >
-            <a style={{textDecoration:"none", color:"#fff"}} target="_blank" href={"http://maps.google.com/?q=" +  props.address}>VIEW ON MAP</a>
-             
+            >
+              <a
+                style={{ textDecoration: "none", color: "#fff" }}
+                target="_blank"
+                href={"http://maps.google.com/?q=" + props.address}
+              >
+                VIEW ON MAP
+              </a>
             </Button>
             {auth.isLoggedIn && (
               <Button to={`/places/${props.id}`}>EDIT</Button>

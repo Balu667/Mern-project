@@ -31,8 +31,6 @@ const UserPlaces = () => {
     setUserPlaces(userPlaces.filter((e) => e.id !== id));
   };
 
-  console.log(userPlaces)
-
   return (
     <React.Fragment>
       <ErrorModal error={errorMessage} onClear={clearErrorHandler} />
